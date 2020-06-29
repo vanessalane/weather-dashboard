@@ -19,11 +19,12 @@ var confirmLocation = function(locationsArray) {
 var saveLocation = function(location) {
     // track the locations that have been searched
     var cityName = location.adminArea5;
+    // display location as city, state, country
+    var displayName = cityName + ", " + location.adminArea3 + ", " + location.adminArea1;
+    currentWeatherCity.textContent = displayName;
+    // save the search if it hasn't already been saved
     if (!searchTerms.includes(cityName)) {
         searchTerms.push(cityName);
-        // display location as city, state, country
-        var displayName = location.adminArea5 + ", " + location.adminArea3 + ", " + location.adminArea1;
-        currentWeatherCity.textContent = displayName;
         // define the object to save
         var cityData = {
             displayName: displayName,
@@ -31,12 +32,17 @@ var saveLocation = function(location) {
         };
         // load localStorage, update it, then save
         searchHistory.push(cityData);
-        localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+        localStorageHistory = {
+            searchTerms: searchTerms,
+            searchHistory: searchHistory
+        }
+        localStorage.setItem("searchHistory", JSON.stringify(localStorageHistory));
         // display the search history
         createSearchHistoryElement(cityData);
     }
 }
 
+// use the mapquest API to geocode the location based on the search terms
 var getCoordinates = function(searchTerm) {
     searchTerm = searchTerm.split(" ").join("+");
     var geocodingApiUrl = "http://www.mapquestapi.com/geocoding/v1/address?key=ZJUiXdZZzhsEe05eUGvmmAsIoTPvQOHn&location=" + searchTerm;
@@ -74,7 +80,7 @@ var getWeather = function(coords) {
     })
 }
 
-// create search history helper functions
+// create search history card
 var createSearchHistoryElement = function(locationData) {
     var newCard = document.createElement("div");
     newCard.classList = "uk-card-default uk-card uk-card-body uk-card-hover uk-card-small uk-text-center search-history-item";
@@ -83,13 +89,17 @@ var createSearchHistoryElement = function(locationData) {
     searchHistoryElement.appendChild(newCard);
 }
 
+// use the search history to display the search history in the search panel
 var displaySearchHistory = function() {
     var loadedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
     if(loadedSearchHistory) {
         // display cards for the search history
-        searchHistory = loadedSearchHistory;
+        searchTerms = loadedSearchHistory.searchTerms;
+        searchHistory = loadedSearchHistory.searchHistory;
         for (var i=0; i < searchHistory.length; i++) {
-            createSearchHistoryElement(searchHistory[i])
+            if (!searchTerms.includes(searchHistory[i])) {
+                createSearchHistoryElement(searchHistory[i]);
+            }
         }
     }
 }
@@ -124,10 +134,12 @@ var displayWeather = function(weatherData) {
     var temperatureElement = currentWeatherData.querySelector("#current-weather-current-temp");
     var temperature = Math.floor(weatherData.current.temp);  // fahrenheit if imperial, celsius if metric
     temperatureElement.textContent = "Current Temperature: " + temperature + "°F";
+
     // display the minimum temperature
     var minTempElement = currentWeatherData.querySelector("#current-weather-min-temp");
     var minTemp = Math.floor(weatherData.daily[0].temp.min);  // fahrenheit if imperial, celsius if metric
     minTempElement.textContent = "Low: " + minTemp + "°F";
+
     // display the maximum temperature
     var maxTempElement = currentWeatherData.querySelector("#current-weather-max-temp");
     var maxTemp = Math.floor(weatherData.daily[0].temp.max);  // fahrenheit if imperial, celsius if metric
@@ -161,8 +173,6 @@ var displayWeather = function(weatherData) {
 
 // display the 5 day forecast
 var displayForecast = function(forecastData) {
-    console.log(forecastData);
-    // iterate through the first 5 forecasts
     for (var i=1; i < 6; i++) {
         // display the date
         var dateElement = forecastElement.querySelector("#forecast-date-" + i);
@@ -180,11 +190,12 @@ var displayForecast = function(forecastData) {
         var humidity = forecastData[i].humidity;  // percentage
         humidityElement.textContent = "Humidity: " + humidity + "%";
 
-        // display temperature
+        // display min temperature
         var minTempElement = forecastElement.querySelector("#forecast-min-temp-" + i);
         var minTemp = Math.floor(forecastData[i].temp.min);  // fahrenheit if imperial, celsius if metric
         minTempElement.textContent = "Low: " + minTemp + "°F";
 
+        // display max temperature
         var maxTempElement = forecastElement.querySelector("#forecast-max-temp-" + i);
         var maxTemp = Math.floor(forecastData[i].temp.max);  // fahrenheit if imperial, celsius if metric
         maxTempElement.textContent = "High: " + maxTemp + "°F";
