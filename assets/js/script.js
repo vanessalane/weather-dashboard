@@ -1,16 +1,18 @@
 // load the dom elements
 var searchLink = document.querySelector("#search-form");
-var searchInput = document.querySelector("#search-history");
+var searchHistoryElement = document.querySelector("#search-history");
 var currentWeatherCity = document.querySelector("#current-weather-city");
 var currentWeatherData = document.querySelector("#current-weather");
 var forecast = document.querySelector("#forecast");
 
-// define openweathermap api key
+// define other variables
 var apiKey = "3efc587005200cdf1f242650ff091998";
+var searchHistory = [];
 
 // make the api call to get the weather based on the city name
-var getCurrentWeather = function() {
-    var weatherApiUrl = "https://api.openweathermap.org/data/2.5/weather?q=San+Francisco&units=imperial&appid=" + apiKey;
+var getCurrentWeather = function(city) {
+    city.replace(" ","+");  // handle spaces in the city name
+    var weatherApiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&appid=" + apiKey;
     fetch(weatherApiUrl).then(function(res){
         if (res.ok) {
             res.json().then(function(data){
@@ -38,11 +40,36 @@ var getUvIndex = function(coords) {
     })
 }
 
+var createSearchHistoryElement = function(cityName) {
+    console.log(cityName);
+    var newCard = document.createElement("div");
+    newCard.classList = "uk-card-default uk-card uk-card-body uk-card-hover uk-card-small uk-text-center";
+    newCard.textContent = cityName;
+    searchHistoryElement.appendChild(newCard);
+}
+
+var displaySearchHistory = function() {
+    var loadedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
+    if(loadedSearchHistory) {
+        searchHistory = loadedSearchHistory;
+        for (var i=0; i < searchHistory.length; i++) {
+            createSearchHistoryElement(searchHistory[i])
+        }
+    }
+}
+
 // display the current weather
 var displayCurrentWeather = function(weatherData) {
-    // add the city name to the DOM
-    var city = weatherData.name;
-    currentWeatherCity.textContent = city;
+    // add the city name to the current weather card
+    var cityName = weatherData.name;
+    currentWeatherCity.textContent = cityName;
+
+    // also add the city name to the search history
+    if (searchHistory && !searchHistory.includes(cityName)){
+        searchHistory.push(cityName);
+        localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+        createSearchHistoryElement(cityName);
+    }
 
     // display the weather description
     var iconElement = currentWeatherData.querySelector("#current-weather-icon");
@@ -89,3 +116,5 @@ var displayUvIndex = function(uvData) {
         uvIndexElement.classList.add("uk-text-success")
     }
 }
+
+displaySearchHistory();
