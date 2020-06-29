@@ -244,24 +244,24 @@ var displayWeather = function(weatherData) {
     var windSpeed = weatherData.current.wind_speed;  // mph if imperial, m/s if metric
     windSpeedElement.textContent = "Wind Speed: " + windSpeed + " miles per hour";
 
-    // display the UV Index
+    // display the uv index
     var uvIndexElement = currentWeatherData.querySelector("#current-weather-uv-index");
+    uvIndexElement.innerHTML = "";
+    uvIndexElement.textContent = "UV Index: ";
+
+    var uvIndexSpan = document.createElement("span")
     var uvIndex = weatherData.current.uvi;
-    uvIndexElement.textContent = "UV Index: " + uvIndex;
-
-    // remove any existing text color classes on UV Index element
-    uvIndexElement.classList.remove("uk-text-danger");
-    uvIndexElement.classList.remove("uk-text-warning");
-    uvIndexElement.classList.remove("uk-text-success");
-
-    // update UV Index text color according to the EPA sun safety scale: https://www.epa.gov/sunsafety/uv-index-scale-0
+    uvIndexSpan.textContent = uvIndex;
+    
+    // update uv index text color according to the EPA sun safety scale: https://www.epa.gov/sunsafety/uv-index-scale-0
     if (uvIndex >= 8) {
-        uvIndexElement.classList.add("uk-text-danger");
+        uvIndexSpan.classList.add("uk-text-danger");
     } else if (uvIndex >= 3) {
-        uvIndexElement.classList.add("uk-text-warning");
+        uvIndexSpan.classList.add("uk-text-warning");
     } else {
-        uvIndexElement.classList.add("uk-text-success")
+        uvIndexSpan.classList.add("uk-text-success")
     }
+    uvIndexElement.appendChild(uvIndexSpan);
 
     // display the weatherPanel and currentWeatherContainer now that we have weather data
     var weatherPanel = document.querySelector("#weather-panel");
