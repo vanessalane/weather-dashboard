@@ -75,27 +75,42 @@ var saveLocation = function(location) {
     // set the displayName value
     displayName = defineDisplayName(location);
 
-    // save the search if it hasn't already been saved
-    if (!searchTerms.includes(displayName)) {
-        searchTerms.push(displayName);
+    // if the term is already in the search history, pop it from its location so it can be added to the top
+    if (searchTerms.includes(displayName)) {
+        // remove the display name from the search arrays
+        var index = searchTerms.indexOf(displayName);
+        searchTerms.splice(index, 1);
+        searchHistory.splice(index, 1);
 
-        // define the object to save
-        var cityData = {
-            displayName: displayName,
-            coords: location.latLng
-        };
-
-        // load localStorage, update it, then save
-        searchHistory.push(cityData);
-        localStorageHistory = {
-            searchTerms: searchTerms,
-            searchHistory: searchHistory
-        }
-        localStorage.setItem("searchHistory", JSON.stringify(localStorageHistory));
-
-        // display the search history
-        createSearchHistoryElement(cityData);
+        // remove the element from the dom
+        var dataLocationName = displayName.split(" ").join("+")
+        document.getElement
     }
+
+    // define the object to save
+    var cityData = {
+        displayName: displayName,
+        coords: location.latLng
+    };
+
+    // save the search
+    if (searchTerms.length == 5) {
+        // remove the last element if the array has 5 items
+        searchTerms.splice(0, 1);
+        searchHistory.splice(0, 1);
+    }
+    searchTerms.push(displayName);
+    searchHistory.push(cityData);
+
+    // update localStorage
+    localStorageHistory = {
+        searchTerms: searchTerms,
+        searchHistory: searchHistory
+    }
+    localStorage.setItem("searchHistory", JSON.stringify(localStorageHistory));
+
+    // display the search history
+    createSearchHistoryElement(cityData);
 }
 
 var getCoordinates = function(searchTerm) {
@@ -109,7 +124,6 @@ var getCoordinates = function(searchTerm) {
 
                 // find one location to use to generate the weather
                 var locations = data.results[0].locations;
-                var location;
                 if (locations.length == 1) {
                     saveLocation(locations[0]);
                     getWeather(locations[0].latLng);
@@ -118,7 +132,7 @@ var getCoordinates = function(searchTerm) {
                 }
             })
         } else {
-            console.log("Couldn't get the coordinates from the mapquest API: ", res.text)
+            console.log("Couldn't get the coordinates from the mapquest API: ", res.text);
         }
     });
 }
@@ -145,7 +159,7 @@ var createSearchHistoryElement = function(locationData) {
     newCard.classList = "uk-card-default uk-card uk-card-body uk-card-hover uk-card-small uk-text-center search-history-item";
     newCard.textContent = locationData.displayName;
     newCard.setAttribute("data-location-name", locationData.displayName.replace(" ", "+"));
-    searchHistoryElement.appendChild(newCard);
+    searchHistoryElement.insertBefore(newCard, searchHistoryElement.firstChild);
 }
 
 var displaySearchHistory = function() {
@@ -155,7 +169,7 @@ var displaySearchHistory = function() {
     if(loadedSearchHistory) {
         searchTerms = loadedSearchHistory.searchTerms;
         searchHistory = loadedSearchHistory.searchHistory;
-        for (var i=0; i < searchHistory.length; i++) {
+        for (var i=0; i < searchTerms.length; i++) {
             if (!searchTerms.includes(searchHistory[i])) {
                 createSearchHistoryElement(searchHistory[i]);
             }
