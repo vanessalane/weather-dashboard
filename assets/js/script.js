@@ -166,7 +166,7 @@ var displaySearchHistory = function() {
 var displayIcon = function(iconElement, iconCode, iconAlt) {
     /* given an icon code and img element, display an icon */
 
-    var iconSrc = "http://openweathermap.org/img/w/" + iconCode + ".png";
+    var iconSrc = "https://openweathermap.org/img/w/" + iconCode + ".png";
     iconElement.setAttribute("src", iconSrc);
     iconElement.setAttribute("alt", iconAlt);
 }
