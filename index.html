@@ -11,9 +11,12 @@
 </head>
 <body>
     <header>
-        <h1 class="uk-text-center uk-heading-medium">Weather Dashboard</h1>
+        <div class="uk-text-center">
+            <h1 class="uk-heading-medium">Weather Dashboard</h1>
+            <p>A JavaScript app to check the weather, whether you like it or not!</p>
+        </div>
     </header>
-    <main class="uk-flex uk-flex-center">
+    <main class="uk-flex uk-flex-center uk-margin-top">
         <div id="search-panel">
             <div class="uk-container" id="search-form-container">
                 <h3 class="uk-heading-divider uk-text-light">Search</h3>
@@ -25,12 +28,12 @@
                 </div>
             </div>
             <div class="uk-container" id="search-history-container">
-                <h3 class="uk-heading-divider uk-text-light">Search History</h3>
-                <div class="uk-flex-column uk-flex" id="search-history"></div>
+                <h3 class="uk-heading-divider uk-text-light" style="display:none" id="search-history-title">Search History</h3>
+                <div class="uk-flex-column uk-flex" id="search-history-items"></div>
             </div>
         </div>
-        <div id="weather-panel">
-            <div class="uk-container" id="current-weather-container">
+        <div id="weather-panel" style="display:none;">
+            <div class="uk-container weather-panel-item" id="current-weather-container" style="display:none;">
                 <h3 class="uk-heading-divider uk-text-light">Current Weather</h3>
                 <div class="uk-card-default uk-card uk-card-body uk-text-center" id="current-weather">
                     <h3 class="uk-card-title uk-text-light" id="current-weather-city"></h3>
@@ -50,7 +53,7 @@
                     </div>
                 </div>
             </div>
-            <div class="uk-container" id="weather-forecast-container">
+            <div class="uk-container weather-panel-item" id="weather-forecast-container" style="display:none;">
                 <h3 class="uk-heading-divider uk-text-light">5 Day Forecast</h3>
                 <div class="uk-flex uk-flex-center uk-text-center" id="forecast">
                     <div class="uk-card-default uk-card uk-card-body forecast-item">

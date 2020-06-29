@@ -2,7 +2,7 @@
 var searchInput = document.querySelector("#search-input");
 var searchButton = document.querySelector("#search-button");
 var confirmLocationModal = document.querySelector("#confirm-location-modal");
-var searchHistoryElement = document.querySelector("#search-history");
+var searchHistoryItems = document.querySelector("#search-history-items");
 var currentWeatherCity = document.querySelector("#current-weather-city");
 var currentWeatherData = document.querySelector("#current-weather");
 var forecastElement = document.querySelector("#forecast");
@@ -33,7 +33,7 @@ var defineDisplayName = function(location) {
 }
 
 var confirmLocation = function(locationsArray) {
-    /* handle situtations where there are multiple results*/
+    /* handle situtations where there are multiple results by surfacing a modal and prompting the user to choose a location */
 
     // get the form body element and clear it
     var formBody = confirmLocationModal.querySelector("#confirm-location-form-body");
@@ -70,21 +70,23 @@ var confirmLocation = function(locationsArray) {
 }
 
 var saveLocation = function(location) {
-    /* persist the location data */
+    /* add the display names and coordinates for each search to localStorage */
 
     // set the displayName value
     displayName = defineDisplayName(location);
 
-    // if the term is already in the search history, pop it from its location so it can be added to the top
+    // if the term is already in the search history, remove it from the arrays and DOM
     if (searchTerms.includes(displayName)) {
+
         // remove the display name from the search arrays
         var index = searchTerms.indexOf(displayName);
         searchTerms.splice(index, 1);
         searchHistory.splice(index, 1);
 
-        // remove the element from the dom
-        var dataLocationName = displayName.split(" ").join("+")
-        document.getElement
+        // remove the element
+        var dataLocationName = displayName.split(" ").join("+");
+        var searchHistoryItem = searchHistoryItems.querySelector("[data-location-name='" + dataLocationName + "']");
+        searchHistoryItems.removeChild(searchHistoryItem);
     }
 
     // define the object to save
@@ -93,11 +95,15 @@ var saveLocation = function(location) {
         coords: location.latLng
     };
 
-    // save the search
+    // update the search history arrays
     if (searchTerms.length == 5) {
         // remove the last element if the array has 5 items
         searchTerms.splice(0, 1);
         searchHistory.splice(0, 1);
+
+        // also remove it from the DOM
+        var fifthChild = searchHistoryItems.childNodes[4];
+        searchHistoryItems.removeChild(fifthChild);
     }
     searchTerms.push(displayName);
     searchHistory.push(cityData);
@@ -109,7 +115,7 @@ var saveLocation = function(location) {
     }
     localStorage.setItem("searchHistory", JSON.stringify(localStorageHistory));
 
-    // display the search history
+    // update the search history
     createSearchHistoryElement(cityData);
 }
 
@@ -154,12 +160,17 @@ var getWeather = function(coords) {
 
 var createSearchHistoryElement = function(locationData) {
     /* helper function to create search history card */
+    
+    // display the header
+    var searchHistoryHeader = document.querySelector("#search-history-title");
+    searchHistoryHeader.style.display = "block";
 
+    // create the card for the location
     var newCard = document.createElement("div");
     newCard.classList = "uk-card-default uk-card uk-card-body uk-card-hover uk-card-small uk-text-center search-history-item";
     newCard.textContent = locationData.displayName;
-    newCard.setAttribute("data-location-name", locationData.displayName.replace(" ", "+"));
-    searchHistoryElement.insertBefore(newCard, searchHistoryElement.firstChild);
+    newCard.setAttribute("data-location-name", locationData.displayName.split(" ").join("+"));
+    searchHistoryItems.insertBefore(newCard, searchHistoryItems.firstChild);
 }
 
 var displaySearchHistory = function() {
@@ -167,6 +178,8 @@ var displaySearchHistory = function() {
 
     var loadedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
     if(loadedSearchHistory) {
+
+        // add a card for each item in the search history
         searchTerms = loadedSearchHistory.searchTerms;
         searchHistory = loadedSearchHistory.searchHistory;
         for (var i=0; i < searchTerms.length; i++) {
@@ -188,10 +201,10 @@ var displayIcon = function(iconElement, iconCode, iconAlt) {
 var displayWeather = function(weatherData) {
     /* use the weatherData object to display the current weather */
 
-    // update the city name
+    // display the city name
     currentWeatherCity.textContent = displayName;
 
-    // update the date
+    // display today's date
     var dateElement = currentWeatherData.querySelector("#current-weather-date");
     var unixDate = weatherData.current.dt;
     var formattedDate =  moment.unix(unixDate).format("dddd, MMMM Do");
@@ -233,10 +246,12 @@ var displayWeather = function(weatherData) {
     var uvIndex = weatherData.current.uvi;
     uvIndexElement.textContent = "UV Index: " + uvIndex;
 
-    // update the text color according to the EPA sun safety scale: https://www.epa.gov/sunsafety/uv-index-scale-0
+    // remove any existing text color classes on UV Index element
     uvIndexElement.classList.remove("uk-text-danger");
     uvIndexElement.classList.remove("uk-text-warning");
     uvIndexElement.classList.remove("uk-text-success");
+
+    // update UV Index text color according to the EPA sun safety scale: https://www.epa.gov/sunsafety/uv-index-scale-0
     if (uvIndex >= 8) {
         uvIndexElement.classList.add("uk-text-danger");
     } else if (uvIndex >= 3) {
@@ -245,12 +260,19 @@ var displayWeather = function(weatherData) {
         uvIndexElement.classList.add("uk-text-success")
     }
 
+    var weatherPanel = document.querySelector("#weather-panel");
+    var currentWeatherContainer = document.querySelector("#current-weather-container");
+    weatherPanel.style.display = "block";
+    currentWeatherContainer.style.display = "block";
+    
     // display the forecast
     displayForecast(weatherData.daily)
 }
 
-// display the 5 day forecast
 var displayForecast = function(forecastData) {
+    /* display the 5 day forecast */
+
+    // iterate through the first 5 days in the forecast data
     for (var i=1; i < 6; i++) {
 
         // display the date
@@ -279,6 +301,8 @@ var displayForecast = function(forecastData) {
         var maxTemp = Math.floor(forecastData[i].temp.max);  // fahrenheit if imperial, celsius if metric
         maxTempElement.textContent = "High: " + maxTemp + "°F";
     }
+    var forecastContainer = document.querySelector("#weather-forecast-container");
+    forecastContainer.style.display = "block";
 }
 
 // event handler functions
@@ -286,6 +310,7 @@ var searchButtonHandler = function(event) {
     event.preventDefault();
     var searchValue = searchInput.value;
     getCoordinates(searchValue);
+    searchInput.value = "";
 }
 
 var searchHistoryHandler = function(event) {
@@ -320,5 +345,5 @@ var confirmLocationHandler = function(event){
 // event handlers and on load
 displaySearchHistory();
 searchButton.addEventListener("click", searchButtonHandler)
-searchHistoryElement.addEventListener("click", searchHistoryHandler);
+searchHistoryItems.addEventListener("click", searchHistoryHandler);
 confirmLocationModal.addEventListener("submit", confirmLocationHandler);
