@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.5.4/dist/css/uikit.min.css" />
+    <!-- Custom CSS -->
+    <link href="./assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <heading>
+        <div class="uk-margin-large-top uk-margin-large-bottom">
+            <h1 class="uk-text-center uk-heading-medium">Weather Dashboard</h1>
+        </div>
+    </heading>
+    <main class="uk-flex uk-flex-center">
+        <div id="search-panel">
+            <div class="uk-container" id="search-form-container">
+                <h3 class="uk-heading-divider">Search</h3>
+                <div class="uk-card-default uk-card uk-card-body">
+                    <form class="uk-search uk-search-default uk-width-1-1" id="search-form">
+                        <a href="" class="uk-search-icon-flip" uk-search-icon></a>
+                        <input class="uk-search-input" type="search" placeholder="City Name">
+                    </form>
+                </div>
+            </div>
+            <div class="uk-container uk-margin-large-top uk-flex-column uk-flex" id="search-history-container">
+                <h3 class="uk-heading-divider">Search History</h3>
+                <div class="uk-card-default uk-card-small uk-card uk-card-body uk-card-hover uk-text-center">San Francisco</div>
+                <div class="uk-card-default uk-card-small uk-card uk-card-body uk-card-hover uk-text-center uk-margin-top">Lisbon</div>
+                <div class="uk-card-default uk-card-small uk-card uk-card-body uk-card-hover uk-text-center uk-margin-top">Honolulu</div>
+            </div>
+        </div>
+        <div id="weather-panel">
+            <div class="uk-container" id="current-weather-container">
+                <h3 class="uk-heading-divider">Current Weather</h3>
+                <div class="uk-card-default uk-card uk-card-body ">
+                    <h3 class="uk-card-title uk-text-center" id="current-weather-title">San Francisco Weather</h3>
+                    <div class="uk-card-body" id="current-weather"></div>
+                </div>
+            </div>
+            <div class="uk-container uk-margin-large-top" id="weather-forecast-container">
+                <h3 class="uk-heading-divider">5 Day Forecast</h3>
+                <div class="uk-flex uk-flex-center" id="forecast">
+                    <div class="uk-card-default uk-card uk-card-body forecast-item">
+                        <h3 class="uk-card-title uk-text-center" id="forecast-weather-title-1">Day 1</h3>
+                        <div class="uk-card-body" id="forecast-weather-1">sunny</div>
+                    </div>
+                    <div class="uk-card-default uk-card uk-card-body forecast-item uk-margin-left">
+                        <h3 class="uk-card-title uk-text-center" id="forecast-weather-title-2">Day 2</h3>
+                        <div class="uk-card-body" id="forecast-weather-2">sunny</div>
+                    </div>
+                    <div class="uk-card-default uk-card uk-card-body forecast-item uk-margin-left">
+                        <h3 class="uk-card-title uk-text-center" id="forecast-weather-title-3">Day 3</h3>
+                        <div class="uk-card-body" id="forecast-weather-3">sunny</div>
+                    </div>
+                    <div class="uk-card-default uk-card uk-card-body forecast-item uk-margin-left">
+                        <h3 class="uk-card-title uk-text-center" id="forecast-weather-title-4">Day 4</h3>
+                        <div class="uk-card-body" id="forecast-weather-4">sunny</div>
+                    </div>
+                    <div class="uk-card-default uk-card uk-card-body forecast-item uk-margin-left">
+                        <h3 class="uk-card-title uk-text-center" id="forecast-weather-title-5">Day 5</h3>
+                        <div class="uk-card-body" id="forecast-weather-5">sunny</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Custom JS -->
+    <script src="./assets/js/script.js"></script>
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.5.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.5.4/dist/js/uikit-icons.min.js"></script>
+</body>
+</html>
