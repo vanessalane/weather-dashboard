@@ -1,5 +1,6 @@
 // load the dom elements
-var searchLink = document.querySelector("#search-form");
+var searchInput = document.querySelector("#search-input");
+var searchButton = document.querySelector("#search-button");
 var searchHistoryElement = document.querySelector("#search-history");
 var currentWeatherCity = document.querySelector("#current-weather-city");
 var currentWeatherData = document.querySelector("#current-weather");
@@ -11,6 +12,7 @@ var searchHistory = [];
 
 // make the api call to get the weather based on the city name
 var getCurrentWeather = function(city) {
+    city.replace(" ", "+")
     var weatherApiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&appid=" + apiKey;
     fetch(weatherApiUrl).then(function(res){
         if (res.ok) {
@@ -71,6 +73,10 @@ var displayCurrentWeather = function(weatherData) {
         createSearchHistoryElement(cityName);
     }
 
+    // update the date
+    var dateElement = currentWeatherData.querySelector("#current-weather-date");
+    dateElement.textContent = moment().format("dddd, MMMM Do");
+
     // display the weather description
     var iconElement = currentWeatherData.querySelector("#current-weather-icon");
     var iconCode = weatherData.weather[0].icon;
@@ -117,13 +123,19 @@ var displayUvIndex = function(uvData) {
     }
 }
 
-var searchHandler = function(event) {
+var searchButtonHandler = function(event) {
+    event.preventDefault();
+    var searchValue = searchInput.value;
+    getCurrentWeather(searchValue);
+}
+
+var searchHistoryHandler = function(event) {
     if (event.target.classList.contains("search-history-item")) {
         var searchedCity = event.target.id;
-        searchedCity.replace(" ", "+")
         getCurrentWeather(searchedCity)
     }
 }
 
 displaySearchHistory();
-searchHistoryElement.addEventListener("click", searchHandler);
+searchButton.addEventListener("click", searchButtonHandler)
+searchHistoryElement.addEventListener("click", searchHistoryHandler);
