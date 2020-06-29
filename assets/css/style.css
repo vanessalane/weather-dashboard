@@ -15,4 +15,8 @@ header {
     #forecast {
         flex-direction: column;
     }
+    #current-weather-data {
+        flex-direction: column;
+        align-items: center;
+    }
 }

@@ -120,10 +120,18 @@ var displayWeather = function(weatherData) {
     var humidity = weatherData.current.humidity;  // percentage
     humidityElement.textContent = "Humidity: " + humidity + "%";
 
-    // display the temperature
-    var temperatureElement = currentWeatherData.querySelector("#current-weather-temperature");
-    var temperature = weatherData.current.temp;  // fahrenheit if imperial, celsius if metric
+    // display the current temperature
+    var temperatureElement = currentWeatherData.querySelector("#current-weather-current-temp");
+    var temperature = Math.floor(weatherData.current.temp);  // fahrenheit if imperial, celsius if metric
     temperatureElement.textContent = "Current Temperature: " + temperature + "°F";
+    // display the minimum temperature
+    var minTempElement = currentWeatherData.querySelector("#current-weather-min-temp");
+    var minTemp = Math.floor(weatherData.daily[0].temp.min);  // fahrenheit if imperial, celsius if metric
+    minTempElement.textContent = "Low: " + minTemp + "°F";
+    // display the maximum temperature
+    var maxTempElement = currentWeatherData.querySelector("#current-weather-max-temp");
+    var maxTemp = Math.floor(weatherData.daily[0].temp.max);  // fahrenheit if imperial, celsius if metric
+    maxTempElement.textContent = "High: " + maxTemp + "°F";
 
     // display the wind speed
     var windSpeedElement = currentWeatherData.querySelector("#current-weather-wind-speed");
@@ -173,13 +181,13 @@ var displayForecast = function(forecastData) {
         humidityElement.textContent = "Humidity: " + humidity + "%";
 
         // display temperature
-        var temperatureElement = forecastElement.querySelector("#forecast-min-temp-" + i);
-        var temperature = Math.floor(forecastData[i].temp.min);  // fahrenheit if imperial, celsius if metric
-        temperatureElement.textContent = "Min: " + temperature + "°F";
+        var minTempElement = forecastElement.querySelector("#forecast-min-temp-" + i);
+        var minTemp = Math.floor(forecastData[i].temp.min);  // fahrenheit if imperial, celsius if metric
+        minTempElement.textContent = "Low: " + minTemp + "°F";
 
-        var temperatureElement = forecastElement.querySelector("#forecast-max-temp-" + i);
-        var temperature = Math.floor(forecastData[i].temp.max);  // fahrenheit if imperial, celsius if metric
-        temperatureElement.textContent = "Max: " + temperature + "°F";
+        var maxTempElement = forecastElement.querySelector("#forecast-max-temp-" + i);
+        var maxTemp = Math.floor(forecastData[i].temp.max);  // fahrenheit if imperial, celsius if metric
+        maxTempElement.textContent = "High: " + maxTemp + "°F";
     }
 }
 
