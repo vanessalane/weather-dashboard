@@ -1,4 +1,5 @@
 # Weather Dashboard
+https://vanessalane.github.io/weather-dashboard/
 
 ## User Story
 As a traveler, I want tot see the weather outlook for multiple cities so that I can plan a trip accordingly.
@@ -10,3 +11,5 @@ Given a weather dashboard with form inputs:
 * When I view the UV index, then I am presented with a color that indicates whether the conditions are favorable, moderate, or severe
 * When I view future weather conditions for that city, then I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, and the humidity
 * When I click on a city in the search history, then I am again presented with current and future conditions for that city
+
+## Screenshots
