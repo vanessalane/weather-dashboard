@@ -309,8 +309,10 @@ var displayForecast = function(forecastData) {
 var searchButtonHandler = function(event) {
     event.preventDefault();
     var searchValue = searchInput.value;
-    getCoordinates(searchValue);
-    searchInput.value = "";
+    if (searchValue) {
+        getCoordinates(searchValue);
+        searchInput.value = "";
+    }
 }
 
 var searchHistoryHandler = function(event) {
