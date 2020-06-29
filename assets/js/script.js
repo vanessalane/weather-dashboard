@@ -15,11 +15,13 @@ var searchHistory = [];
 var defineDisplayName = function(location) {
     /* display the location as city, state, country */
 
+    // define the location components
     var city = location.adminArea5;
     var state = location.adminArea3;
     var country = location.adminArea1;
-    var tempDisplayName = [];
 
+    // construct an array of the location components
+    var tempDisplayName = [];
     if (city) {
         tempDisplayName.push(city);
     }
@@ -29,13 +31,15 @@ var defineDisplayName = function(location) {
     if (country) {
         tempDisplayName.push(country);
     }
+
+    // return the joined array so that we don't need to deal with extra commas
     return tempDisplayName.join(", ");
 }
 
 var confirmLocation = function(locationsArray) {
     /* handle situtations where there are multiple results by surfacing a modal and prompting the user to choose a location */
 
-    // get the form body element and clear it
+    // get the form body element and clear its contents
     var formBody = confirmLocationModal.querySelector("#confirm-location-form-body");
     formBody.innerHTML = "";
 
@@ -97,6 +101,7 @@ var saveLocation = function(location) {
 
     // update the search history arrays
     if (searchTerms.length == 5) {
+
         // remove the last element if the array has 5 items
         searchTerms.splice(0, 1);
         searchHistory.splice(0, 1);
@@ -134,7 +139,7 @@ var getCoordinates = function(searchTerm) {
                     saveLocation(locations[0]);
                     getWeather(locations[0].latLng);
                 } else {
-                    confirmLocation(locations);
+                    confirmLocation(locations);  // prompt the user to confirm the location
                 }
             })
         } else {
@@ -150,7 +155,7 @@ var getWeather = function(coords) {
     fetch(weatherApiUrl).then(function(res){
         if (res.ok) {
             res.json().then(function(data){
-                displayWeather(data);
+                displayWeather(data);  // display the current weather and forecast
             })
         } else {
             console.log("Couldn't get the weather data from the openweathermap API: ", res.text);
@@ -158,7 +163,7 @@ var getWeather = function(coords) {
     })
 }
 
-var createSearchHistoryElement = function(locationData) {
+var createSearchHistoryElement = function(searchHistoryData) {
     /* helper function to create search history card */
     
     // display the header
@@ -168,8 +173,8 @@ var createSearchHistoryElement = function(locationData) {
     // create the card for the location
     var newCard = document.createElement("div");
     newCard.classList = "uk-card-default uk-card uk-card-body uk-card-hover uk-card-small uk-text-center search-history-item";
-    newCard.textContent = locationData.displayName;
-    newCard.setAttribute("data-location-name", locationData.displayName.split(" ").join("+"));
+    newCard.textContent = searchHistoryData.displayName;
+    newCard.setAttribute("data-location-name", searchHistoryData.displayName.split(" ").join("+"));
     searchHistoryItems.insertBefore(newCard, searchHistoryItems.firstChild);
 }
 
@@ -178,13 +183,11 @@ var displaySearchHistory = function() {
 
     var loadedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
     if(loadedSearchHistory) {
-
-        // add a card for each item in the search history
         searchTerms = loadedSearchHistory.searchTerms;
         searchHistory = loadedSearchHistory.searchHistory;
         for (var i=0; i < searchTerms.length; i++) {
             if (!searchTerms.includes(searchHistory[i])) {
-                createSearchHistoryElement(searchHistory[i]);
+                createSearchHistoryElement(searchHistory[i]);  // add a search term to the search history panel
             }
         }
     }
@@ -260,6 +263,7 @@ var displayWeather = function(weatherData) {
         uvIndexElement.classList.add("uk-text-success")
     }
 
+    // display the weatherPanel and currentWeatherContainer now that we have weather data
     var weatherPanel = document.querySelector("#weather-panel");
     var currentWeatherContainer = document.querySelector("#current-weather-container");
     weatherPanel.style.display = "block";
@@ -301,6 +305,8 @@ var displayForecast = function(forecastData) {
         var maxTemp = Math.floor(forecastData[i].temp.max);  // fahrenheit if imperial, celsius if metric
         maxTempElement.textContent = "High: " + maxTemp + "°F";
     }
+
+    // display the forecast container
     var forecastContainer = document.querySelector("#weather-forecast-container");
     forecastContainer.style.display = "block";
 }
@@ -308,6 +314,7 @@ var displayForecast = function(forecastData) {
 // event handler functions
 var searchButtonHandler = function(event) {
     event.preventDefault();
+    confirmLocationModal.querySelector("#confirm-location-form-message").classList.remove("uk-text-primary");
     var searchValue = searchInput.value;
     if (searchValue) {
         getCoordinates(searchValue);
@@ -324,6 +331,8 @@ var searchHistoryHandler = function(event) {
 
 var confirmLocationHandler = function(event){
     event.preventDefault();
+
+    // figure out whether the user has chosen a location
     var confirmedLocation;
     var radioButtons = document.getElementsByName("search-result");
     for (var i=0; i < radioButtons.length; i++) {
@@ -332,15 +341,15 @@ var confirmLocationHandler = function(event){
         }
     }
 
-    // if a location was found, display the weather
+    // if they chose a location, display the weather
     if (confirmedLocation) {
         UIkit.modal("#confirm-location-modal").hide();
         saveLocation(confirmedLocation);
         getWeather(confirmedLocation.latLng)
+        confirmLocationModal.querySelector("#confirm-location-form-message").classList.remove("uk-text-primary");
     }
-    else {
-        // if not, let the user know they're missing a response.
-        confirmLocationModal.querySelector("#confirm-location-form-message").textContent = "Please select a city from the options below.";
+    else {  // otherwise, let the user know they're missing a response.
+        confirmLocationModal.querySelector("#confirm-location-form-message").classList.add("uk-text-primary");
     }
 }
 
