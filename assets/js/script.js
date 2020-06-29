@@ -1,35 +1,90 @@
 // load the dom elements
 var searchInput = document.querySelector("#search-input");
 var searchButton = document.querySelector("#search-button");
+var confirmLocationModal = document.querySelector("#confirm-location-modal");
 var searchHistoryElement = document.querySelector("#search-history");
 var currentWeatherCity = document.querySelector("#current-weather-city");
 var currentWeatherData = document.querySelector("#current-weather");
 var forecastElement = document.querySelector("#forecast");
 
 // define other variables
+var displayName;
 var searchTerms = [];
 var searchHistory = [];
 
-// get the coordinates for the search term
-var confirmLocation = function(locationsArray) {
-    return locationsArray[0];
+var defineDisplayName = function(location) {
+    /* display the location as city, state, country */
+
+    var city = location.adminArea5;
+    var state = location.adminArea3;
+    var country = location.adminArea1;
+    var tempDisplayName = [];
+
+    if (city) {
+        tempDisplayName.push(city);
+    }
+    if (state) {
+        tempDisplayName.push(state);
+    }
+    if (country) {
+        tempDisplayName.push(country);
+    }
+    return tempDisplayName.join(", ");
 }
 
-// persist the location data
+var confirmLocation = function(locationsArray) {
+    /* handle situtations where there are multiple results*/
+
+    // get the form body element and clear it
+    var formBody = confirmLocationModal.querySelector("#confirm-location-form-body");
+    formBody.innerHTML = "";
+
+    // set up the modal
+    for (let i=0; i < locationsArray.length; i++) {
+
+        // create the container
+        var searchResultContainer = document.createElement("div");
+        searchResultContainer.classList.add("search-result-item", "uk-form-controls", "uk-margin");
+
+        // create the radio button
+        var searchResultInput = document.createElement("input");
+        searchResultInput.setAttribute("type", "radio");
+        searchResultInput.setAttribute("name", "search-result");
+        searchResultInput.setAttribute("id", "search-result-" + i);
+        searchResultInput.setAttribute("data-location", JSON.stringify(locationsArray[i]));
+        searchResultContainer.appendChild(searchResultInput);
+
+        // create the label
+        var modalDisplayName = defineDisplayName(locationsArray[i]);
+        var searchResultLabel = document.createElement("label");
+        searchResultLabel.innerText = modalDisplayName;
+        searchResultLabel.setAttribute("for", "search-result-" + i);
+        searchResultContainer.appendChild(searchResultLabel);
+
+        // add the container to the form
+        formBody.appendChild(searchResultContainer);
+    }
+
+    // display the modal
+    UIkit.modal("#confirm-location-modal").show();
+}
+
 var saveLocation = function(location) {
-    // track the locations that have been searched
-    var cityName = location.adminArea5;
-    // display location as city, state, country
-    var displayName = cityName + ", " + location.adminArea3 + ", " + location.adminArea1;
-    currentWeatherCity.textContent = displayName;
+    /* persist the location data */
+
+    // set the displayName value
+    displayName = defineDisplayName(location);
+
     // save the search if it hasn't already been saved
-    if (!searchTerms.includes(cityName)) {
-        searchTerms.push(cityName);
+    if (!searchTerms.includes(displayName)) {
+        searchTerms.push(displayName);
+
         // define the object to save
         var cityData = {
             displayName: displayName,
             coords: location.latLng
         };
+
         // load localStorage, update it, then save
         searchHistory.push(cityData);
         localStorageHistory = {
@@ -37,37 +92,38 @@ var saveLocation = function(location) {
             searchHistory: searchHistory
         }
         localStorage.setItem("searchHistory", JSON.stringify(localStorageHistory));
+
         // display the search history
         createSearchHistoryElement(cityData);
     }
 }
 
-// use the mapquest API to geocode the location based on the search terms
 var getCoordinates = function(searchTerm) {
+    /* use the mapquest API to geocode the location based on the search terms */
+
     searchTerm = searchTerm.split(" ").join("+");
     var geocodingApiUrl = "https://www.mapquestapi.com/geocoding/v1/address?key=ZJUiXdZZzhsEe05eUGvmmAsIoTPvQOHn&location=" + searchTerm;
     fetch(geocodingApiUrl).then(function(res) {
         if (res.ok) {
             res.json().then(function(data) {
+
                 // find one location to use to generate the weather
                 var locations = data.results[0].locations;
                 var location;
-                if (locations.length > 1) {
-                    location = confirmLocation(locations);
+                if (locations.length == 1) {
+                    saveLocation(locations[0]);
+                    getWeather(locations[0].latLng);
                 } else {
-                    location = locations[0];
+                    confirmLocation(locations);
                 }
-                // add the coordinates to local storage
-                saveLocation(location);
-                // get the weather
-                getWeather(location.latLng);
             })
         }
     });
 }
 
-// make the api call to get the weather based on the city name
 var getWeather = function(coords) {
+    /* make the api call to get the weather based on a set of coordinates {lat: x, lng: y} */
+
     var weatherApiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + coords.lat + "&lon=" + coords.lng + "&units=imperial&exclude=minutely,hourly&appid=3efc587005200cdf1f242650ff091998";
     fetch(weatherApiUrl).then(function(res){
         if (res.ok) {
@@ -80,8 +136,9 @@ var getWeather = function(coords) {
     })
 }
 
-// create search history card
 var createSearchHistoryElement = function(locationData) {
+    /* helper function to create search history card */
+
     var newCard = document.createElement("div");
     newCard.classList = "uk-card-default uk-card uk-card-body uk-card-hover uk-card-small uk-text-center search-history-item";
     newCard.textContent = locationData.displayName;
@@ -89,11 +146,11 @@ var createSearchHistoryElement = function(locationData) {
     searchHistoryElement.appendChild(newCard);
 }
 
-// use the search history to display the search history in the search panel
 var displaySearchHistory = function() {
+    /* display search history cards if there's a search history in localStorage */
+
     var loadedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
     if(loadedSearchHistory) {
-        // display cards for the search history
         searchTerms = loadedSearchHistory.searchTerms;
         searchHistory = loadedSearchHistory.searchHistory;
         for (var i=0; i < searchHistory.length; i++) {
@@ -104,15 +161,20 @@ var displaySearchHistory = function() {
     }
 }
 
-// given an icon code and img element, display an icon
 var displayIcon = function(iconElement, iconCode, iconAlt) {
+    /* given an icon code and img element, display an icon */
+
     var iconSrc = "http://openweathermap.org/img/w/" + iconCode + ".png";
     iconElement.setAttribute("src", iconSrc);
     iconElement.setAttribute("alt", iconAlt);
 }
 
-// display the current weather
 var displayWeather = function(weatherData) {
+    /* use the weatherData object to display the current weather */
+
+    // update the city name
+    currentWeatherCity.textContent = displayName;
+
     // update the date
     var dateElement = currentWeatherData.querySelector("#current-weather-date");
     var unixDate = weatherData.current.dt;
@@ -174,6 +236,7 @@ var displayWeather = function(weatherData) {
 // display the 5 day forecast
 var displayForecast = function(forecastData) {
     for (var i=1; i < 6; i++) {
+
         // display the date
         var dateElement = forecastElement.querySelector("#forecast-date-" + i);
         var unixDate = forecastData[i].dt;
@@ -216,7 +279,30 @@ var searchHistoryHandler = function(event) {
     }
 }
 
+var confirmLocationHandler = function(event){
+    event.preventDefault();
+    var confirmedLocation;
+    var radioButtons = document.getElementsByName("search-result");
+    for (var i=0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked) {
+            confirmedLocation = JSON.parse(radioButtons[i].getAttribute("data-location"));
+        }
+    }
+
+    // if a location was found, display the weather
+    if (confirmedLocation) {
+        UIkit.modal("#confirm-location-modal").hide();
+        saveLocation(confirmedLocation);
+        getWeather(confirmedLocation.latLng)
+    }
+    else {
+        // if not, let the user know they're missing a response.
+        confirmLocationModal.querySelector("#confirm-location-form-message").textContent = "Please select a city from the options below.";
+    }
+}
+
 // event handlers and on load
 displaySearchHistory();
 searchButton.addEventListener("click", searchButtonHandler)
 searchHistoryElement.addEventListener("click", searchHistoryHandler);
+confirmLocationModal.addEventListener("submit", confirmLocationHandler);

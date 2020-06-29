@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Weather</title>
-    <!-- UIkit CSS -->
+
+    <!-- CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.5.4/dist/css/uikit.min.css" />
-    <!-- Custom CSS -->
     <link href="./assets/css/style.css" rel="stylesheet">
 </head>
 <body>
@@ -91,13 +91,28 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div id="confirm-location-modal" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body">
+                <h2 class="uk-modal-title">Your search had multiple locations</h2>
+                <p class="uk-text-right" id="confirm-location-form-buttons"></p>
+                <form id="confirm-location-form">
+                    <p id="confirm-location-form-message" class="uk-text-primary"></p>
+                    <div id="confirm-location-form-body"></div>
+                    <p class="uk-text-right" id="confirm-location-form-buttons">
+                        <button class="uk-button uk-button-default uk-modal-close" type="button" id="confirm-location-cancel">Cancel</button>
+                        <button class="uk-button uk-button-primary" type="submit" id="confirm-location-save">Search</button>
+                    </p>
+                </form>
+            </div>
+        </div>
     </main>
-    <!-- UIkit JS -->
+
+    <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.5.4/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.5.4/dist/js/uikit-icons.min.js"></script>
-    <!-- Moment JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
-    <!-- Custom JS -->
     <script src="./assets/js/script.js"></script>
 </body>
 </html>
