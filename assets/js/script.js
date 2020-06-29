@@ -11,7 +11,6 @@ var searchHistory = [];
 
 // make the api call to get the weather based on the city name
 var getCurrentWeather = function(city) {
-    city.replace(" ","+");  // handle spaces in the city name
     var weatherApiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&appid=" + apiKey;
     fetch(weatherApiUrl).then(function(res){
         if (res.ok) {
@@ -41,16 +40,17 @@ var getUvIndex = function(coords) {
 }
 
 var createSearchHistoryElement = function(cityName) {
-    console.log(cityName);
     var newCard = document.createElement("div");
-    newCard.classList = "uk-card-default uk-card uk-card-body uk-card-hover uk-card-small uk-text-center";
+    newCard.classList = "uk-card-default uk-card uk-card-body uk-card-hover uk-card-small uk-text-center search-history-item";
     newCard.textContent = cityName;
+    newCard.setAttribute("id", cityName.replace(" ","+"));
     searchHistoryElement.appendChild(newCard);
 }
 
 var displaySearchHistory = function() {
     var loadedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
     if(loadedSearchHistory) {
+        // display cards for the search history
         searchHistory = loadedSearchHistory;
         for (var i=0; i < searchHistory.length; i++) {
             createSearchHistoryElement(searchHistory[i])
@@ -117,4 +117,13 @@ var displayUvIndex = function(uvData) {
     }
 }
 
+var searchHandler = function(event) {
+    if (event.target.classList.contains("search-history-item")) {
+        var searchedCity = event.target.id;
+        searchedCity.replace(" ", "+")
+        getCurrentWeather(searchedCity)
+    }
+}
+
 displaySearchHistory();
+searchHistoryElement.addEventListener("click", searchHandler);
