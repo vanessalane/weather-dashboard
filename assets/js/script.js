@@ -45,7 +45,7 @@ var saveLocation = function(location) {
 // use the mapquest API to geocode the location based on the search terms
 var getCoordinates = function(searchTerm) {
     searchTerm = searchTerm.split(" ").join("+");
-    var geocodingApiUrl = "http://www.mapquestapi.com/geocoding/v1/address?key=ZJUiXdZZzhsEe05eUGvmmAsIoTPvQOHn&location=" + searchTerm;
+    var geocodingApiUrl = "https://www.mapquestapi.com/geocoding/v1/address?key=ZJUiXdZZzhsEe05eUGvmmAsIoTPvQOHn&location=" + searchTerm;
     fetch(geocodingApiUrl).then(function(res) {
         if (res.ok) {
             res.json().then(function(data) {
