@@ -1,0 +1,18 @@
+header {
+    padding-top: 3em;
+}
+.uk-card {
+    margin: 10px;
+}
+.uk-container {
+    padding-top: 2em;
+}
+
+@media screen and (max-width: 640px) {
+    main {
+        flex-direction: column;
+    }
+    #forecast {
+        flex-direction: column;
+    }
+}
