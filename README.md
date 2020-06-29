@@ -13,4 +13,4 @@ Given a weather dashboard with form inputs:
 * When I click on a city in the search history, then I am again presented with current and future conditions for that city
 
 ## Screenshot
-![Screenshot](assets/img/weather_screenshot.png)
+![Screenshot of weather app](assets/img/screenshot.png)
