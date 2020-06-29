@@ -117,6 +117,8 @@ var getCoordinates = function(searchTerm) {
                     confirmLocation(locations);
                 }
             })
+        } else {
+            console.log("Couldn't get the coordinates from the mapquest API: ", res.text)
         }
     });
 }
@@ -131,7 +133,7 @@ var getWeather = function(coords) {
                 displayWeather(data);
             })
         } else {
-            console.log("Couldn't get the weather data");
+            console.log("Couldn't get the weather data from the openweathermap API: ", res.text);
         }
     })
 }
