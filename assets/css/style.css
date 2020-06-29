@@ -13,6 +13,9 @@ header {
     main {
         flex-direction: column;
     }
+    .uk-card {
+         white-space: normal;
+    }
     #forecast {
         flex-direction: column;
     }
