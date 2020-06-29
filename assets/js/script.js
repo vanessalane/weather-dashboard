@@ -1,6 +1,7 @@
 // load the dom elements
 var searchInput = document.querySelector("#search-input");
 var searchButton = document.querySelector("#search-button");
+var confirmLocationModal = document.querySelector("#confirm-location-modal");
 var searchHistoryElement = document.querySelector("#search-history");
 var currentWeatherCity = document.querySelector("#current-weather-city");
 var currentWeatherData = document.querySelector("#current-weather");
@@ -12,7 +13,8 @@ var searchHistory = [];
 
 // get the coordinates for the search term
 var confirmLocation = function(locationsArray) {
-    return locationsArray[0];
+    UIkit.modal("#confirm-location-modal").show();
+    return locationsArray[0]
 }
 
 // persist the location data
@@ -216,7 +218,13 @@ var searchHistoryHandler = function(event) {
     }
 }
 
+var confirmLocationHandler = function(event){
+    event.preventDefault();
+    UIkit.modal("#confirm-location-modal").hide();
+}
+
 // event handlers and on load
 displaySearchHistory();
 searchButton.addEventListener("click", searchButtonHandler)
 searchHistoryElement.addEventListener("click", searchHistoryHandler);
+confirmLocationModal.addEventListener("submit", confirmLocationHandler);
