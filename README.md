@@ -2,7 +2,7 @@
 https://vanessalane.github.io/weather-dashboard/
 
 ## Description
-A JS app to check the weather!
+A vanilla JS app to check the weather and store previous searches in LocalStorage.
 
 ## APIs/Frameworks
 - [OpenWeatherMap](https://rapidapi.com/community/api/open-weather-map)
