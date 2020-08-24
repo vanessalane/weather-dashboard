@@ -1,16 +1,18 @@
 # Weather Dashboard
 https://vanessalane.github.io/weather-dashboard/
 
+## Description
+A JS app to check the weather!
+
+## APIs/Frameworks
+- [OpenWeatherMap](https://rapidapi.com/community/api/open-weather-map)
+- [UI Kit](https://getuikit.com/)
+
 ## User Story
 As a traveler, I want tot see the weather outlook for multiple cities so that I can plan a trip accordingly.
 
-## Requirements
-Given a weather dashboard with form inputs:
-* When I search for a city, then I am presented with current and future conditions for that city, and that city is added to the search history.
-* When I view current weather conditions for that city, then I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index
-* When I view the UV index, then I am presented with a color that indicates whether the conditions are favorable, moderate, or severe
-* When I view future weather conditions for that city, then I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, and the humidity
-* When I click on a city in the search history, then I am again presented with current and future conditions for that city
+## Questions
+If you have questions, email me at [vlane0593@gmail.com](mailto:vlane0593@gmail.com) or reach out on [GitHub](https://www.github.com/vanessalane)
 
 ## Screenshot
 ![Screenshot of weather app](assets/img/screenshot.png)
